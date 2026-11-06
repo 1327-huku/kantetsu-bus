@@ -5,222 +5,232 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>関鉄バス通勤ナビ</title>
   
-  <!-- iPhoneホーム画面用アイコン指定（PNG高画質） -->
   <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/bus-emoji.png">
   
   <style>
     :root {
-      --bg: #f4f6f9;
+      --bg: #f2f4f7;
       --card-bg: #ffffff;
-      --primary: #cc0000;
-      --text: #1a1a1a;
-      --text-sub: #666666;
+      /* 関東鉄道の公式近似色（クリムゾンレッド） */
+      --kantetsu-red: #B71C1C; 
+      --kantetsu-dark: #2c3e50;
+      --text: #1f2937;
+      --text-sub: #6b7280;
       --green: #059669;
+      --urgent: #ef4444;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
       background-color: var(--bg);
       color: var(--text);
-      padding-bottom: 30px;
+      padding-bottom: 40px;
     }
     
+    /* 公式風ヘッダー */
     .top-header {
-      background-color: var(--primary);
+      background-color: var(--kantetsu-red);
       color: white;
-      padding: 12px 16px;
+      padding: 14px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       position: sticky;
       top: 0;
       z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
     }
     .header-title-group { display: flex; align-items: center; gap: 8px; }
-    .badge { background: rgba(255,255,255,0.2); font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
-    .header-sub { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
-    .time-display { text-align: right; font-weight: bold; font-size: 1.1rem; }
-    .date-display { font-size: 0.65rem; opacity: 0.8; }
+    .badge { background: white; color: var(--kantetsu-red); font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
+    .header-sub { font-size: 0.75rem; opacity: 0.9; margin-top: 4px; letter-spacing: 0.5px; }
+    .time-display { text-align: right; }
+    #current-time { font-weight: 800; font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
+    .date-display { font-size: 0.7rem; opacity: 0.9; display: flex; gap: 4px; justify-content: flex-end; align-items: center;}
+    .dia-badge { background: #ffeb3b; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
 
     .container { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
+    /* 公式ナビリンクカード */
     .dark-card {
-      background: #1e293b; color: white; border-radius: 16px; padding: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: var(--kantetsu-dark); color: white; border-radius: 14px; padding: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-bottom: 4px solid var(--kantetsu-red);
     }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .card-head-title { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-    .tag-red { background: var(--primary); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; }
-    .card-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px; line-height: 1.4; }
+    .card-desc { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.5; }
     .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-action {
-      background: #e11d48; color: white; text-decoration: none; padding: 10px;
+      background: var(--kantetsu-red); color: white; text-decoration: none; padding: 12px;
       border-radius: 10px; font-size: 0.85rem; font-weight: bold; text-align: center;
-      display: flex; align-items: center; justify-content: center; gap: 4px;
+      transition: opacity 0.2s;
     }
-    .btn-action.secondary { background: #334155; }
+    .btn-action:active { opacity: 0.7; }
+    .btn-action.secondary { background: #475569; }
 
+    /* タブ */
     .tab-bar {
       background: white; border-radius: 12px; padding: 4px; display: flex; gap: 4px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     .tab-btn {
-      flex: 1; padding: 10px 4px; text-align: center; border: none; background: none;
+      flex: 1; padding: 12px 4px; text-align: center; border: none; background: none;
       font-size: 0.85rem; font-weight: bold; color: var(--text-sub); border-radius: 8px; cursor: pointer;
     }
-    .tab-btn.active { background: #fef2f2; color: var(--primary); }
+    .tab-btn.active { background: #ffebee; color: var(--kantetsu-red); }
 
     .main-route-card {
-      background: var(--primary); color: white; border-radius: 16px; padding: 16px;
-      box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
+      background: linear-gradient(135deg, var(--kantetsu-red), #e53935); color: white; border-radius: 14px; padding: 16px;
+      box-shadow: 0 4px 12px rgba(183, 28, 28, 0.25);
     }
     .route-sub-label { font-size: 0.8rem; opacity: 0.9; }
-    .route-main-name { font-size: 1.15rem; font-weight: bold; margin-top: 4px; }
+    .route-main-name { font-size: 1.15rem; font-weight: bold; margin-top: 6px; }
 
     .recommend-box {
-      background: var(--green); color: white; border-radius: 16px; padding: 14px 16px;
+      background: var(--green); color: white; border-radius: 14px; padding: 14px 16px;
       font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
     }
     .recommend-sub { font-size: 0.75rem; opacity: 0.9; margin-bottom: 4px; }
 
+    /* 時刻表カード */
     .time-card {
-      background: white; border-radius: 16px; padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; position: relative;
+      background: white; border-radius: 14px; padding: 18px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative;
     }
     .time-card-badge {
-      position: absolute; top: 14px; right: 14px; background: #ef4444; color: white;
-      font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;
+      position: absolute; top: 16px; right: 16px; background: var(--urgent); color: white;
+      font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(239,68,68,0.3);
     }
-    .route-type { font-size: 0.75rem; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
-    .target-name { font-size: 0.85rem; color: var(--text-sub); margin-left: 6px; }
-    .route-title { font-size: 1rem; font-weight: bold; margin: 8px 0 12px; }
-    .next-time-container { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #f1f5f9; padding-top: 8px; }
-    .time-label { font-size: 0.75rem; color: var(--text-sub); }
-    .time-val { font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1; }
-    .eta-val { color: #ef4444; font-weight: bold; font-size: 0.95rem; }
-    .eta-next { font-size: 0.75rem; color: var(--text-sub); }
+    .route-type { font-size: 0.75rem; background: #fee2e2; color: #991b1b; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
+    .target-name { font-size: 0.9rem; color: var(--text-sub); margin-left: 8px; font-weight: 600; }
+    .route-title { font-size: 1.05rem; font-weight: bold; margin: 12px 0 16px; color: var(--text); }
+    
+    .next-time-container { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #e2e8f0; padding-top: 12px; }
+    .time-label { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 4px; }
+    .time-val { font-size: 2.2rem; font-weight: 800; color: var(--kantetsu-dark); line-height: 1; letter-spacing: -1px; }
+    .eta-val { font-weight: 800; font-size: 1.1rem; text-align: right; }
+    .eta-val.safe { color: var(--green); }
+    .eta-val.warning { color: #f59e0b; }
+    .eta-val.danger { color: var(--urgent); animation: pulse 1.5s infinite; }
+    .eta-next { font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; text-align: right; }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.6; }
+      100% { opacity: 1; }
+    }
 
     .view-section { display: none; }
-    .view-section.active { display: flex; flex-direction: column; gap: 16px; }
+    .view-section.active { display: flex; flex-direction: column; gap: 16px; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
   </style>
 </head>
 <body>
 
-  <!-- トップヘッダー -->
   <div class="top-header">
     <div>
       <div class="header-title-group">
-        <strong style="font-size:1.1rem;">関鉄バス通勤ナビ</strong>
         <span class="badge">関東鉄道</span>
+        <strong style="font-size:1.1rem;">バス通勤ナビ</strong>
       </div>
       <div class="header-sub">文化センター入口 / 緑岡高校入口 / 水戸駅</div>
     </div>
     <div class="time-display">
       <div id="current-time">--:--</div>
-      <div id="current-date" class="date-display">----/--/--</div>
+      <div class="date-display">
+        <span id="current-date">----/--/--</span>
+        <span class="dia-badge" id="dia-badge">ダイヤ判定中</span>
+      </div>
     </div>
   </div>
 
   <div class="container">
 
-    <!-- リアルタイム直通枠 -->
     <div class="dark-card">
       <div class="card-head">
-        <div class="card-head-title">
-          <span>📈 リアルタイム遅延・バス位置確認</span>
-        </div>
-        <span class="tag-red">関鉄ナビ直通</span>
+        <div class="card-head-title">📈 リアルタイム遅延・バス位置確認</div>
       </div>
-      <div class="card-desc">
-        関東鉄道バスの公式ナビで、現在走っているバスのリアルタイム位置と遅延分数を直接チェックできます。
-      </div>
+      <div class="card-desc">関東鉄道公式ナビに直結。現在走っているバスのリアルタイム位置と遅延分数を直接チェックできます。</div>
       <div class="btn-group">
-        <a class="btn-action" href="https://navi.kanto-tetsudo.com/search_hist" target="_blank">検索履歴から確認 ↗</a>
-        <a class="btn-action secondary" href="https://navi.kanto-tetsudo.com/" target="_blank">関鉄バスナビトップ ↗</a>
+        <a class="btn-action" href="https://navi.kanto-tetsudo.com/search_hist" target="_blank">検索履歴を開く ↗</a>
+        <a class="btn-action secondary" href="https://navi.kanto-tetsudo.com/" target="_blank">関鉄トップ ↗</a>
       </div>
     </div>
 
-    <!-- タブ切替ボタン -->
     <div class="tab-bar">
       <button class="tab-btn" id="btn-auto" onclick="switchTab('auto')">✨ 自動切替</button>
-      <button class="tab-btn" id="btn-am" onclick="switchTab('am')">☀️ 午前 (行き)</button>
-      <button class="tab-btn active" id="btn-pm" onclick="switchTab('pm')">🌙 午後 (帰路)</button>
+      <button class="tab-btn" id="btn-am" onclick="switchTab('am')">☀️ 行き(朝)</button>
+      <button class="tab-btn" id="btn-pm" onclick="switchTab('pm')">🌙 帰路(夕)</button>
     </div>
 
     <!-- 午前ビュー -->
     <div id="view-am" class="view-section">
       <div class="main-route-card">
-        <div class="route-sub-label">関東鉄道 朝ルート（行き）</div>
+        <div class="route-sub-label">朝ルート（行き）</div>
         <div class="route-main-name">☀️ 文化センター入口 ➔ 緑岡高校入口</div>
       </div>
-
       <div class="time-card">
         <div>
-          <span class="route-type">通勤ルート</span>
-          <span class="target-name">緑岡高校入口 行き</span>
+          <span class="route-type">通勤ルート</span><span class="target-name">緑岡高校入口 行き</span>
         </div>
         <div class="route-title">文化センター入口 ➔ 緑岡高校入口</div>
-        
         <div class="next-time-container">
           <div>
             <div class="time-label">次回発車時刻</div>
-            <div class="time-val">07:35</div>
+            <div class="time-val" id="am-next-time">--:--</div>
           </div>
-          <div style="text-align: right;">
-            <div class="eta-val">目安発車時間</div>
-            <div class="eta-next">次便: 07:50</div>
+          <div>
+            <div class="eta-val" id="am-eta">計算中...</div>
+            <div class="eta-next" id="am-sub-next">次便: --:--</div>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 午後ビュー -->
-    <div id="view-pm" class="view-section active">
+    <div id="view-pm" class="view-section">
       <div class="main-route-card">
-        <div class="route-sub-label">関東鉄道 夕方ルート（帰路）</div>
+        <div class="route-sub-label">夕方ルート（帰路）</div>
         <div class="route-main-name">🌙 緑岡高校入口 ➔ 水戸駅北口 / 南口</div>
       </div>
 
-      <div class="recommend-box">
+      <div class="recommend-box" id="recommend-box">
         <div class="recommend-sub">夕方帰路：早く来る便の自動比較</div>
-        <div>⚡️ 「水戸駅北口行き」が先に到着予定（あと2分）</div>
+        <div id="recommend-text">計算中...</div>
       </div>
 
       <div class="time-card">
-        <span class="time-card-badge">⏱️ 先に来る！</span>
+        <span class="time-card-badge" id="badge-north" style="display:none;">⏱️ 先発</span>
         <div>
-          <span class="route-type">北口ルート</span>
-          <span class="target-name">水戸駅北口 行き</span>
+          <span class="route-type">北口ルート</span><span class="target-name">水戸駅北口 行き</span>
         </div>
         <div class="route-title">緑岡高校入口 ➔ 水戸駅北口</div>
-        
         <div class="next-time-container">
           <div>
             <div class="time-label">次回発車時刻</div>
-            <div class="time-val">16:45</div>
+            <div class="time-val" id="pm-north-next">--:--</div>
           </div>
-          <div style="text-align: right;">
-            <div class="eta-val">あと 2分</div>
-            <div class="eta-next">次便: 17:15</div>
+          <div>
+            <div class="eta-val" id="pm-north-eta">計算中...</div>
+            <div class="eta-next" id="pm-north-sub">次便: --:--</div>
           </div>
         </div>
       </div>
 
       <div class="time-card">
+        <span class="time-card-badge" id="badge-south" style="display:none; background:#0284c7;">⏱️ 先発</span>
         <div>
-          <span class="route-type" style="background:#e0f2fe; color:#0369a1;">南口ルート</span>
-          <span class="target-name">水戸駅南口 行き</span>
+          <span class="route-type" style="background:#e0f2fe; color:#0369a1;">南口ルート</span><span class="target-name">水戸駅南口 行き</span>
         </div>
         <div class="route-title">緑岡高校入口 ➔ 水戸駅南口</div>
-        
         <div class="next-time-container">
           <div>
             <div class="time-label">次回発車時刻</div>
-            <div class="time-val">17:00</div>
+            <div class="time-val" id="pm-south-next">--:--</div>
           </div>
-          <div style="text-align: right;">
-            <div class="eta-val" style="color:#0369a1;">あと 17分</div>
-            <div class="eta-next">次便: 17:30</div>
+          <div>
+            <div class="eta-val" id="pm-south-eta">計算中...</div>
+            <div class="eta-next" id="pm-south-sub">次便: --:--</div>
           </div>
         </div>
       </div>
@@ -229,7 +239,26 @@
   </div>
 
   <script>
-    function updateClock() {
+    // -------------------------------------------------------------
+    // 【データ設定】平日と土日祝で別々の時刻表を持たせました
+    // （※実際の時刻に合わせて自由に書き換えてください！）
+    // -------------------------------------------------------------
+    const timetables = {
+      weekday: {
+        am: ["07:15", "07:35", "07:50", "08:10", "08:30"],
+        pmNorth: ["16:15", "16:45", "17:15", "17:45", "18:15", "19:00"],
+        pmSouth: ["16:30", "17:00", "17:30", "18:00", "18:30"]
+      },
+      weekend: {
+        am: ["07:30", "08:00", "08:30", "09:00"],
+        pmNorth: ["16:30", "17:30", "18:30", "19:30"],
+        pmSouth: ["16:45", "17:45", "18:45"]
+      }
+    };
+
+    let currentTabMode = 'auto';
+
+    function updateApp() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -239,36 +268,123 @@
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const date = String(now.getDate()).padStart(2, '0');
       const days = ['日', '月', '火', '水', '木', '金', '土'];
-      const day = days[now.getDay()];
-      document.getElementById('current-date').textContent = `${year}/${month}/${date} (${day})`;
+      document.getElementById('current-date').textContent = `${month}/${date}(${days[now.getDay()]})`;
+
+      // 曜日判定（土・日なら休日ダイヤ）
+      const isWeekend = now.getDay() === 0 || now.getDay() === 6;
+      const currentSchedule = isWeekend ? timetables.weekend : timetables.weekday;
+      
+      const badge = document.getElementById('dia-badge');
+      badge.textContent = isWeekend ? "土日祝ダイヤ" : "平日ダイヤ";
+      badge.style.background = isWeekend ? "#fca5a5" : "#ffeb3b";
+      badge.style.color = isWeekend ? "#7f1d1d" : "#000";
+
+      // タイムテーブル計算
+      const amInfo = getNextBusInfo(currentSchedule.am, now);
+      const pmNorthInfo = getNextBusInfo(currentSchedule.pmNorth, now);
+      const pmSouthInfo = getNextBusInfo(currentSchedule.pmSouth, now);
+
+      updateDisplay('am', amInfo);
+      updateDisplay('pm-north', pmNorthInfo);
+      updateDisplay('pm-south', pmSouthInfo);
+
+      // 先発判定
+      updateRecommend(pmNorthInfo, pmSouthInfo);
+
+      if (currentTabMode === 'auto') {
+        applyTabDisplay('auto', now.getHours());
+      }
     }
-    setInterval(updateClock, 1000);
-    updateClock();
+
+    function getNextBusInfo(times, now) {
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      for (let i = 0; i < times.length; i++) {
+        const [h, m] = times[i].split(':').map(Number);
+        const busMinutes = h * 60 + m;
+        // 今の時刻より未来のバスを見つけたら返す
+        if (busMinutes >= currentMinutes) {
+          return {
+            next: times[i],
+            diffMinutes: busMinutes - currentMinutes,
+            afterNext: i + 1 < times.length ? times[i + 1] : null
+          };
+        }
+      }
+      return { next: null, diffMinutes: null, afterNext: null };
+    }
+
+    function updateDisplay(prefix, info) {
+      const timeEl = document.getElementById(`${prefix}-next-time`) || document.getElementById('am-next-time');
+      const etaEl = document.getElementById(`${prefix}-eta`) || document.getElementById('am-eta');
+      const subEl = document.getElementById(`${prefix}-sub`) || document.getElementById('am-sub-next');
+
+      if (info.diffMinutes === null) {
+        timeEl.textContent = "終了";
+        etaEl.textContent = "本日の運行終了";
+        etaEl.className = "eta-val";
+        subEl.textContent = "次便: なし";
+        return;
+      }
+
+      timeEl.textContent = info.next;
+      subEl.textContent = `次便: ${info.afterNext || "なし"}`;
+
+      // 残り時間による色とテキストの変化
+      if (info.diffMinutes === 0) {
+        etaEl.textContent = "🚌 まもなく発車!";
+        etaEl.className = "eta-val danger";
+      } else if (info.diffMinutes <= 5) {
+        etaEl.textContent = `あと ${info.diffMinutes}分`;
+        etaEl.className = "eta-val danger";
+      } else if (info.diffMinutes <= 15) {
+        etaEl.textContent = `あと ${info.diffMinutes}分`;
+        etaEl.className = "eta-val warning";
+      } else {
+        etaEl.textContent = `あと ${info.diffMinutes}分`;
+        etaEl.className = "eta-val safe";
+      }
+    }
+
+    function updateRecommend(north, south) {
+      const badgeNorth = document.getElementById('badge-north');
+      const badgeSouth = document.getElementById('badge-south');
+      const recommendText = document.getElementById('recommend-text');
+
+      if (north.diffMinutes !== null && (south.diffMinutes === null || north.diffMinutes <= south.diffMinutes)) {
+        badgeNorth.style.display = 'block'; badgeSouth.style.display = 'none';
+        recommendText.textContent = `⚡️ 「北口行き」が先発（あと ${north.diffMinutes}分）`;
+      } else if (south.diffMinutes !== null) {
+        badgeNorth.style.display = 'none'; badgeSouth.style.display = 'block';
+        recommendText.textContent = `⚡️ 「南口行き」が先発（あと ${south.diffMinutes}分）`;
+      } else {
+        badgeNorth.style.display = 'none'; badgeSouth.style.display = 'none';
+        recommendText.textContent = `🌙 本日の運行はすべて終了しました`;
+      }
+    }
 
     function switchTab(type) {
+      currentTabMode = type;
+      applyTabDisplay(type, new Date().getHours());
+    }
+
+    function applyTabDisplay(type, currentHour) {
       document.getElementById('btn-auto').classList.remove('active');
       document.getElementById('btn-am').classList.remove('active');
       document.getElementById('btn-pm').classList.remove('active');
-      
       document.getElementById('view-am').classList.remove('active');
       document.getElementById('view-pm').classList.remove('active');
 
-      if (type === 'am') {
-        document.getElementById('btn-am').classList.add('active');
+      if (type === 'am' || (type === 'auto' && currentHour < 13)) {
+        document.getElementById(type === 'auto' ? 'btn-auto' : 'btn-am').classList.add('active');
         document.getElementById('view-am').classList.add('active');
-      } else if (type === 'pm') {
-        document.getElementById('btn-pm').classList.add('active');
+      } else {
+        document.getElementById(type === 'auto' ? 'btn-auto' : 'btn-pm').classList.add('active');
         document.getElementById('view-pm').classList.add('active');
-      } else if (type === 'auto') {
-        document.getElementById('btn-auto').classList.add('active');
-        const hour = new Date().getHours();
-        if (hour < 12) {
-          document.getElementById('view-am').classList.add('active');
-        } else {
-          document.getElementById('view-pm').classList.add('active');
-        }
       }
     }
+
+    setInterval(updateApp, 1000);
+    updateApp();
   </script>
 </body>
 </html>
