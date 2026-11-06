@@ -9,7 +9,6 @@
       --bg: #f4f6f9;
       --card-bg: #ffffff;
       --primary: #cc0000;
-      --primary-dark: #990000;
       --text: #1a1a1a;
       --text-sub: #666666;
       --green: #059669;
@@ -22,7 +21,6 @@
       padding-bottom: 30px;
     }
     
-    /* ヘッダー */
     .top-header {
       background-color: var(--primary);
       color: white;
@@ -34,220 +32,72 @@
       top: 0;
       z-index: 100;
     }
-    .header-title-group {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .badge {
-      background: rgba(255,255,255,0.2);
-      font-size: 0.75rem;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .header-sub {
-      font-size: 0.7rem;
-      opacity: 0.8;
-      margin-top: 2px;
-    }
-    .time-display {
-      text-align: right;
-      font-weight: bold;
-      font-size: 1.1rem;
-    }
-    .date-display {
-      font-size: 0.65rem;
-      opacity: 0.8;
-    }
+    .header-title-group { display: flex; align-items: center; gap: 8px; }
+    .badge { background: rgba(255,255,255,0.2); font-size: 0.75rem; padding: 2px 6px; border-radius: 4px; }
+    .header-sub { font-size: 0.7rem; opacity: 0.8; margin-top: 2px; }
+    .time-display { text-align: right; font-weight: bold; font-size: 1.1rem; }
+    .date-display { font-size: 0.65rem; opacity: 0.8; }
 
-    .container {
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+    .container { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
-    /* ダークカード */
     .dark-card {
-      background: #1e293b;
-      color: white;
-      border-radius: 16px;
-      padding: 16px;
+      background: #1e293b; color: white; border-radius: 16px; padding: 16px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .card-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-    .card-head-title {
-      font-size: 0.95rem;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .tag-red {
-      background: var(--primary);
-      color: white;
-      font-size: 0.7rem;
-      padding: 2px 8px;
-      border-radius: 12px;
-    }
-    .card-desc {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-    .btn-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .card-head-title { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
+    .tag-red { background: var(--primary); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 12px; }
+    .card-desc { font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px; line-height: 1.4; }
+    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .btn-action {
-      background: #e11d48;
-      color: white;
-      text-decoration: none;
-      padding: 10px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: bold;
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+      background: #e11d48; color: white; text-decoration: none; padding: 10px;
+      border-radius: 10px; font-size: 0.85rem; font-weight: bold; text-align: center;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
     }
-    .btn-action.secondary {
-      background: #334155;
-    }
+    .btn-action.secondary { background: #334155; }
 
-    /* タブ切替 */
     .tab-bar {
-      background: white;
-      border-radius: 12px;
-      padding: 4px;
-      display: flex;
-      gap: 4px;
+      background: white; border-radius: 12px; padding: 4px; display: flex; gap: 4px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
     .tab-btn {
-      flex: 1;
-      padding: 8px;
-      text-align: center;
-      border: none;
-      background: none;
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: var(--text-sub);
-      border-radius: 8px;
-      cursor: pointer;
+      flex: 1; padding: 10px 4px; text-align: center; border: none; background: none;
+      font-size: 0.85rem; font-weight: bold; color: var(--text-sub); border-radius: 8px; cursor: pointer;
     }
-    .tab-btn.active {
-      background: #fef2f2;
-      color: var(--primary);
-    }
+    .tab-btn.active { background: #fef2f2; color: var(--primary); }
 
-    /* メインルートカード */
     .main-route-card {
-      background: var(--primary);
-      color: white;
-      border-radius: 16px;
-      padding: 16px;
+      background: var(--primary); color: white; border-radius: 16px; padding: 16px;
       box-shadow: 0 4px 12px rgba(204, 0, 0, 0.2);
     }
-    .route-sub-label {
-      font-size: 0.8rem;
-      opacity: 0.9;
-    }
-    .route-main-name {
-      font-size: 1.15rem;
-      font-weight: bold;
-      margin-top: 4px;
-    }
+    .route-sub-label { font-size: 0.8rem; opacity: 0.9; }
+    .route-main-name { font-size: 1.15rem; font-weight: bold; margin-top: 4px; }
 
-    /* 先着比較グリーン枠 */
     .recommend-box {
-      background: var(--green);
-      color: white;
-      border-radius: 16px;
-      padding: 14px 16px;
-      font-weight: bold;
-      font-size: 0.95rem;
-      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+      background: var(--green); color: white; border-radius: 16px; padding: 14px 16px;
+      font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
     }
-    .recommend-sub {
-      font-size: 0.75rem;
-      opacity: 0.9;
-      margin-bottom: 4px;
-    }
+    .recommend-sub { font-size: 0.75rem; opacity: 0.9; margin-bottom: 4px; }
 
-    /* 時刻カード */
     .time-card {
-      background: white;
-      border-radius: 16px;
-      padding: 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      border: 1px solid #f1f5f9;
-      position: relative;
+      background: white; border-radius: 16px; padding: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); border: 1px solid #f1f5f9; position: relative;
     }
     .time-card-badge {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      background: #ef4444;
-      color: white;
-      font-size: 0.7rem;
-      font-weight: bold;
-      padding: 2px 8px;
-      border-radius: 10px;
+      position: absolute; top: 14px; right: 14px; background: #ef4444; color: white;
+      font-size: 0.7rem; font-weight: bold; padding: 2px 8px; border-radius: 10px;
     }
-    .route-type {
-      font-size: 0.75rem;
-      background: #fee2e2;
-      color: #991b1b;
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-weight: bold;
-    }
-    .target-name {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-      margin-left: 6px;
-    }
-    .route-title {
-      font-size: 1rem;
-      font-weight: bold;
-      margin: 8px 0 12px;
-    }
-    .next-time-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      border-top: 1px solid #f1f5f9;
-      padding-top: 8px;
-    }
-    .time-label {
-      font-size: 0.75rem;
-      color: var(--text-sub);
-    }
-    .time-val {
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1;
-    }
-    .eta-val {
-      color: #ef4444;
-      font-weight: bold;
-      font-size: 0.95rem;
-    }
-    .eta-next {
-      font-size: 0.75rem;
-      color: var(--text-sub);
-    }
+    .route-type { font-size: 0.75rem; background: #fee2e2; color: #991b1b; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
+    .target-name { font-size: 0.85rem; color: var(--text-sub); margin-left: 6px; }
+    .route-title { font-size: 1rem; font-weight: bold; margin: 8px 0 12px; }
+    .next-time-container { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #f1f5f9; padding-top: 8px; }
+    .time-label { font-size: 0.75rem; color: var(--text-sub); }
+    .time-val { font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .eta-val { color: #ef4444; font-weight: bold; font-size: 0.95rem; }
+    .eta-next { font-size: 0.75rem; color: var(--text-sub); }
+
+    .view-section { display: none; }
+    .view-section.active { display: flex; flex-direction: column; gap: 16px; }
   </style>
 </head>
 <body>
@@ -281,67 +131,94 @@
         関東鉄道バスの公式ナビで、現在走っているバスのリアルタイム位置と遅延分数を直接チェックできます。
       </div>
       <div class="btn-group">
-        <a class="btn-action" href="https://navi.kanto-tetsudo.com/" target="_blank">検索履歴から確認 ↗</a>
+        <!-- 提供いただいた検索履歴URLを反映 -->
+        <a class="btn-action" href="https://navi.kanto-tetsudo.com/search_hist" target="_blank">検索履歴から確認 ↗</a>
         <a class="btn-action secondary" href="https://navi.kanto-tetsudo.com/" target="_blank">関鉄バスナビトップ ↗</a>
       </div>
     </div>
 
-    <!-- 自動切替タブ -->
+    <!-- タブ切替ボタン -->
     <div class="tab-bar">
-      <button class="tab-btn">✨ 自動切替</button>
-      <button class="tab-btn">☀️ 午前 (行き)</button>
-      <button class="tab-btn active">🌙 午後 (帰路)</button>
+      <button class="tab-btn" id="btn-auto" onclick="switchTab('auto')">✨ 自動切替</button>
+      <button class="tab-btn" id="btn-am" onclick="switchTab('am')">☀️ 午前 (行き)</button>
+      <button class="tab-btn active" id="btn-pm" onclick="switchTab('pm')">🌙 午後 (帰路)</button>
     </div>
 
-    <!-- メイン表示ルート -->
-    <div class="main-route-card">
-      <div class="route-sub-label">関東鉄道 夕方ルート（帰路）</div>
-      <div class="route-main-name">🌙 緑岡高校入口 ➔ 水戸駅北口 / 南口</div>
-    </div>
-
-    <!-- おすすめ先着比較 -->
-    <div class="recommend-box">
-      <div class="recommend-sub">夕方帰路：早く来る便の自動比較</div>
-      <div>⚡️ 「水戸駅北口行き」が先に到着予定（あと2分）</div>
-    </div>
-
-    <!-- 発車カード1（北口） -->
-    <div class="time-card">
-      <span class="time-card-badge">⏱️ 先に来る！</span>
-      <div>
-        <span class="route-type">北口ルート</span>
-        <span class="target-name">水戸駅北口 行き</span>
+    <!-- 午前ビュー -->
+    <div id="view-am" class="view-section">
+      <div class="main-route-card">
+        <div class="route-sub-label">関東鉄道 朝ルート（行き）</div>
+        <div class="route-main-name">☀️ 文化センター入口 ➔ 緑岡高校入口</div>
       </div>
-      <div class="route-title">緑岡高校入口 ➔ 水戸駅北口</div>
-      
-      <div class="next-time-container">
+
+      <div class="time-card">
         <div>
-          <div class="time-label">次回発車時刻</div>
-          <div class="time-val">16:45</div>
+          <span class="route-type">通勤ルート</span>
+          <span class="target-name">緑岡高校入口 行き</span>
         </div>
-        <div style="text-align: right;">
-          <div class="eta-val">あと 2分</div>
-          <div class="eta-next">次便: 17:15</div>
+        <div class="route-title">文化センター入口 ➔ 緑岡高校入口</div>
+        
+        <div class="next-time-container">
+          <div>
+            <div class="time-label">次回発車時刻</div>
+            <div class="time-val">07:35</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="eta-val">目安発車時間</div>
+            <div class="eta-next">次便: 07:50</div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- 発車カード2（南口） -->
-    <div class="time-card">
-      <div>
-        <span class="route-type" style="background:#e0f2fe; color:#0369a1;">南口ルート</span>
-        <span class="target-name">水戸駅南口 行き</span>
+    <!-- 午後ビュー -->
+    <div id="view-pm" class="view-section active">
+      <div class="main-route-card">
+        <div class="route-sub-label">関東鉄道 夕方ルート（帰路）</div>
+        <div class="route-main-name">🌙 緑岡高校入口 ➔ 水戸駅北口 / 南口</div>
       </div>
-      <div class="route-title">緑岡高校入口 ➔ 水戸駅南口</div>
-      
-      <div class="next-time-container">
+
+      <div class="recommend-box">
+        <div class="recommend-sub">夕方帰路：早く来る便の自動比較</div>
+        <div>⚡️ 「水戸駅北口行き」が先に到着予定（あと2分）</div>
+      </div>
+
+      <div class="time-card">
+        <span class="time-card-badge">⏱️ 先に来る！</span>
         <div>
-          <div class="time-label">次回発車時刻</div>
-          <div class="time-val">17:00</div>
+          <span class="route-type">北口ルート</span>
+          <span class="target-name">水戸駅北口 行き</span>
         </div>
-        <div style="text-align: right;">
-          <div class="eta-val" style="color:#0369a1;">あと 17分</div>
-          <div class="eta-next">次便: 17:30</div>
+        <div class="route-title">緑岡高校入口 ➔ 水戸駅北口</div>
+        
+        <div class="next-time-container">
+          <div>
+            <div class="time-label">次回発車時刻</div>
+            <div class="time-val">16:45</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="eta-val">あと 2分</div>
+            <div class="eta-next">次便: 17:15</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="time-card">
+        <div>
+          <span class="route-type" style="background:#e0f2fe; color:#0369a1;">南口ルート</span>
+          <span class="target-name">水戸駅南口 行き</span>
+        </div>
+        <div class="route-title">緑岡高校入口 ➔ 水戸駅南口</div>
+        
+        <div class="next-time-container">
+          <div>
+            <div class="time-label">次回発車時刻</div>
+            <div class="time-val">17:00</div>
+          </div>
+          <div style="text-align: right;">
+            <div class="eta-val" style="color:#0369a1;">あと 17分</div>
+            <div class="eta-next">次便: 17:30</div>
+          </div>
         </div>
       </div>
     </div>
@@ -349,7 +226,6 @@
   </div>
 
   <script>
-    // リアルタイム時計更新機能
     function updateClock() {
       const now = new Date();
       const hours = String(now.getHours()).padStart(2, '0');
@@ -365,6 +241,31 @@
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    function switchTab(type) {
+      document.getElementById('btn-auto').classList.remove('active');
+      document.getElementById('btn-am').classList.remove('active');
+      document.getElementById('btn-pm').classList.remove('active');
+      
+      document.getElementById('view-am').classList.remove('active');
+      document.getElementById('view-pm').classList.remove('active');
+
+      if (type === 'am') {
+        document.getElementById('btn-am').classList.add('active');
+        document.getElementById('view-am').classList.add('active');
+      } else if (type === 'pm') {
+        document.getElementById('btn-pm').classList.add('active');
+        document.getElementById('view-pm').classList.add('active');
+      } else if (type === 'auto') {
+        document.getElementById('btn-auto').classList.add('active');
+        const hour = new Date().getHours();
+        if (hour < 12) {
+          document.getElementById('view-am').classList.add('active');
+        } else {
+          document.getElementById('view-pm').classList.add('active');
+        }
+      }
+    }
   </script>
 </body>
 </html>
