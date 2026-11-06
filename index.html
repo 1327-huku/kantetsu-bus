@@ -11,7 +11,6 @@
     :root {
       --bg: #f2f4f7;
       --card-bg: #ffffff;
-      /* 関東鉄道の公式近似色（クリムゾンレッド） */
       --kantetsu-red: #B71C1C; 
       --kantetsu-dark: #2c3e50;
       --text: #1f2937;
@@ -27,7 +26,6 @@
       padding-bottom: 40px;
     }
     
-    /* 公式風ヘッダー */
     .top-header {
       background-color: var(--kantetsu-red);
       color: white;
@@ -50,7 +48,6 @@
 
     .container { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
 
-    /* 公式ナビリンクカード */
     .dark-card {
       background: var(--kantetsu-dark); color: white; border-radius: 14px; padding: 16px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-bottom: 4px solid var(--kantetsu-red);
@@ -67,7 +64,6 @@
     .btn-action:active { opacity: 0.7; }
     .btn-action.secondary { background: #475569; }
 
-    /* タブ */
     .tab-bar {
       background: white; border-radius: 12px; padding: 4px; display: flex; gap: 4px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.05);
@@ -91,7 +87,6 @@
     }
     .recommend-sub { font-size: 0.75rem; opacity: 0.9; margin-bottom: 4px; }
 
-    /* 時刻表カード */
     .time-card {
       background: white; border-radius: 14px; padding: 18px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative;
@@ -208,7 +203,7 @@
         <div class="next-time-container">
           <div>
             <div class="time-label">次回発車時刻</div>
-            <div class="time-val" id="pm-north-next">--:--</div>
+            <div class="time-val" id="pm-north-next-time">--:--</div>
           </div>
           <div>
             <div class="eta-val" id="pm-north-eta">計算中...</div>
@@ -226,7 +221,7 @@
         <div class="next-time-container">
           <div>
             <div class="time-label">次回発車時刻</div>
-            <div class="time-val" id="pm-south-next">--:--</div>
+            <div class="time-val" id="pm-south-next-time">--:--</div>
           </div>
           <div>
             <div class="eta-val" id="pm-south-eta">計算中...</div>
@@ -239,10 +234,6 @@
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // 【データ設定】平日と土日祝で別々の時刻表を持たせました
-    // （※実際の時刻に合わせて自由に書き換えてください！）
-    // -------------------------------------------------------------
     const timetables = {
       weekday: {
         am: ["07:15", "07:35", "07:50", "08:10", "08:30"],
@@ -264,13 +255,11 @@
       const minutes = String(now.getMinutes()).padStart(2, '0');
       document.getElementById('current-time').textContent = `${hours}:${minutes}`;
 
-      const year = now.getFullYear();
       const month = String(now.getMonth() + 1).padStart(2, '0');
       const date = String(now.getDate()).padStart(2, '0');
       const days = ['日', '月', '火', '水', '木', '金', '土'];
       document.getElementById('current-date').textContent = `${month}/${date}(${days[now.getDay()]})`;
 
-      // 曜日判定（土・日なら休日ダイヤ）
       const isWeekend = now.getDay() === 0 || now.getDay() === 6;
       const currentSchedule = isWeekend ? timetables.weekend : timetables.weekday;
       
@@ -279,7 +268,6 @@
       badge.style.background = isWeekend ? "#fca5a5" : "#ffeb3b";
       badge.style.color = isWeekend ? "#7f1d1d" : "#000";
 
-      // タイムテーブル計算
       const amInfo = getNextBusInfo(currentSchedule.am, now);
       const pmNorthInfo = getNextBusInfo(currentSchedule.pmNorth, now);
       const pmSouthInfo = getNextBusInfo(currentSchedule.pmSouth, now);
@@ -288,7 +276,6 @@
       updateDisplay('pm-north', pmNorthInfo);
       updateDisplay('pm-south', pmSouthInfo);
 
-      // 先発判定
       updateRecommend(pmNorthInfo, pmSouthInfo);
 
       if (currentTabMode === 'auto') {
@@ -301,7 +288,6 @@
       for (let i = 0; i < times.length; i++) {
         const [h, m] = times[i].split(':').map(Number);
         const busMinutes = h * 60 + m;
-        // 今の時刻より未来のバスを見つけたら返す
         if (busMinutes >= currentMinutes) {
           return {
             next: times[i],
@@ -314,9 +300,11 @@
     }
 
     function updateDisplay(prefix, info) {
-      const timeEl = document.getElementById(`${prefix}-next-time`) || document.getElementById('am-next-time');
-      const etaEl = document.getElementById(`${prefix}-eta`) || document.getElementById('am-eta');
-      const subEl = document.getElementById(`${prefix}-sub`) || document.getElementById('am-sub-next');
+      const timeEl = document.getElementById(`${prefix}-next-time`);
+      const etaEl = document.getElementById(`${prefix}-eta`);
+      const subEl = document.getElementById(`${prefix}-sub`);
+
+      if (!timeEl || !etaEl || !subEl) return;
 
       if (info.diffMinutes === null) {
         timeEl.textContent = "終了";
@@ -329,7 +317,6 @@
       timeEl.textContent = info.next;
       subEl.textContent = `次便: ${info.afterNext || "なし"}`;
 
-      // 残り時間による色とテキストの変化
       if (info.diffMinutes === 0) {
         etaEl.textContent = "🚌 まもなく発車!";
         etaEl.className = "eta-val danger";
