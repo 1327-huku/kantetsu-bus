@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>関鉄バス運行状況ダッシュボード</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary: #003366;
+      --accent: #d9534f;
+      --text: #333333;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text);
+      margin: 0;
+      padding: 16px;
+    }
+    h1 {
+      font-size: 1.4rem;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      color: #555;
+    }
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .card-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    .btn {
+      display: block;
+      text-align: center;
+      background-color: var(--primary);
+      color: white;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 4px;
+    }
+    .btn-sub {
+      background-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚌 関鉄バス 運行確認</h1>
+
+  <div class="section-title">☀️ 午前：通勤ルート</div>
+  <div class="card">
+    <div class="card-title">文化センター入口 ➔ 緑岡高校入口</div>
+    <a class="btn" href="https://navi.kanto-tetsudo.com/" target="_blank">運行状況を確認（関鉄ナビ）</a>
+  </div>
+
+  <div class="section-title">🌙 午後：帰宅ルート</div>
+  <div class="card">
+    <div class="card-title">緑岡高校入口 ➔ 水戸駅北口</div>
+    <a class="btn btn-sub" href="https://navi.kanto-tetsudo.com/" target="_blank">水戸駅北口行きを確認</a>
+  </div>
+
+  <div class="card">
+    <div class="card-title">緑岡高校入口 ➔ 水戸駅南口</div>
+    <a class="btn btn-sub" href="https://navi.kanto-tetsudo.com/" target="_blank">水戸駅南口行きを確認</a>
+  </div>
+
+</body>
+</html>
