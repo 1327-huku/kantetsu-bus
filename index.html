@@ -1,377 +1,615 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>関鉄バス通勤ナビ</title>
-  
-  <link rel="apple-touch-icon" href="https://img.icons8.com/emoji/192/bus-emoji.png">
-  
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="夜景カメラ" />
+  <meta name="theme-color" content="#000000" />
+  <title>夜景・ガラス反射防止カメラ</title>
+
+  <!-- インラインSVGアプリアイコン（夜空・三日月・夜景ビル群・カメラレンズ） -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='sky' x1='0%25' y1='0%25' x2='0%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23050814'/%3E%3Cstop offset='100%25' stop-color='%23101d3a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' fill='url(%23sky)'/%3E%3Ccircle cx='35' cy='38' r='1.5' fill='%23ffffff' opacity='0.8'/%3E%3Ccircle cx='145' cy='30' r='2' fill='%23fde047' opacity='0.9'/%3E%3Ccircle cx='120' cy='55' r='1.2' fill='%23ffffff' opacity='0.6'/%3E%3Cpath d='M138 34 A18 18 0 1 0 156 52 A14 14 0 1 1 138 34 Z' fill='%23facc15'/%3E%3Crect x='18' y='108' width='24' height='72' fill='%230f172a'/%3E%3Crect x='23' y='116' width='4' height='4' fill='%23fbbf24'/%3E%3Crect x='32' y='126' width='4' height='4' fill='%2338bdf8'/%3E%3Crect x='46' y='92' width='28' height='88' fill='%231e293b'/%3E%3Crect x='52' y='100' width='4' height='4' fill='%23fde047'/%3E%3Crect x='62' y='110' width='4' height='4' fill='%23fde047'/%3E%3Crect x='110' y='98' width='26' height='82' fill='%231e293b'/%3E%3Crect x='116' y='108' width='4' height='4' fill='%2338bdf8'/%3E%3Crect x='140' y='114' width='24' height='66' fill='%230f172a'/%3E%3Ccircle cx='90' cy='96' r='36' fill='%23090d16' stroke='%23475569' stroke-width='4'/%3E%3Ccircle cx='90' cy='96' r='24' fill='%230f172a' stroke='%2338bdf8' stroke-width='2.5'/%3E%3Ccircle cx='90' cy='96' r='11' fill='%23020617'/%3E%3Ccircle cx='83' cy='89' r='4' fill='%23ffffff' opacity='0.45'/%3E%3C/svg%3E" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='36' fill='%23050814'/%3E%3Ccircle cx='90' cy='90' r='44' fill='%230f172a' stroke='%2338bdf8' stroke-width='5'/%3E%3Ccircle cx='80' cy='80' r='8' fill='%23ffffff' opacity='0.5'/%3E%3C/svg%3E" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
   <style>
-    :root {
-      --bg: #f2f4f7;
-      --card-bg: #ffffff;
-      --kantetsu-red: #B71C1C; 
-      --kantetsu-dark: #2c3e50;
-      --text: #1f2937;
-      --text-sub: #6b7280;
-      --green: #059669;
-      --urgent: #ef4444;
+    /* 完全黒（OLEDピクセル完全消灯）＆ナイトビジョン配色 */
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      user-select: none;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      padding-bottom: 40px;
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      color: #555555;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Hiragino Sans", sans-serif;
+      overflow: hidden;
+      overscroll-behavior: none;
+      touch-action: manipulation;
     }
-    
-    .top-header {
-      background-color: var(--kantetsu-red);
-      color: white;
-      padding: 14px 16px;
+
+    .safe-top {
+      padding-top: max(12px, env(safe-area-inset-top));
+    }
+    .safe-bottom {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+
+    /* 100%真っ黒（デフォルト）＆極小枠（構図合わせ用オプション） */
+    #camera-stage {
+      position: relative;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-    }
-    .header-title-group { display: flex; align-items: center; gap: 8px; }
-    .badge { background: white; color: var(--kantetsu-red); font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; font-weight: bold; }
-    .header-sub { font-size: 0.75rem; opacity: 0.9; margin-top: 4px; letter-spacing: 0.5px; }
-    .time-display { text-align: right; }
-    #current-time { font-weight: 800; font-size: 1.3rem; line-height: 1; margin-bottom: 2px; }
-    .date-display { font-size: 0.7rem; opacity: 0.9; display: flex; gap: 4px; justify-content: flex-end; align-items: center;}
-    .dia-badge { background: #ffeb3b; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; font-weight: bold; }
-
-    .container { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
-
-    .dark-card {
-      background: var(--kantetsu-dark); color: white; border-radius: 14px; padding: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08); border-bottom: 4px solid var(--kantetsu-red);
-    }
-    .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-    .card-head-title { font-size: 0.95rem; font-weight: bold; display: flex; align-items: center; gap: 6px; }
-    .card-desc { font-size: 0.8rem; color: #cbd5e1; margin-bottom: 12px; line-height: 1.5; }
-    .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .btn-action {
-      background: var(--kantetsu-red); color: white; text-decoration: none; padding: 12px;
-      border-radius: 10px; font-size: 0.85rem; font-weight: bold; text-align: center;
-      transition: opacity 0.2s;
-    }
-    .btn-action:active { opacity: 0.7; }
-    .btn-action.secondary { background: #475569; }
-
-    .tab-bar {
-      background: white; border-radius: 12px; padding: 4px; display: flex; gap: 4px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-    .tab-btn {
-      flex: 1; padding: 12px 4px; text-align: center; border: none; background: none;
-      font-size: 0.85rem; font-weight: bold; color: var(--text-sub); border-radius: 8px; cursor: pointer;
-    }
-    .tab-btn.active { background: #ffebee; color: var(--kantetsu-red); }
-
-    .main-route-card {
-      background: linear-gradient(135deg, var(--kantetsu-red), #e53935); color: white; border-radius: 14px; padding: 16px;
-      box-shadow: 0 4px 12px rgba(183, 28, 28, 0.25);
-    }
-    .route-sub-label { font-size: 0.8rem; opacity: 0.9; }
-    .route-main-name { font-size: 1.15rem; font-weight: bold; margin-top: 6px; }
-
-    .recommend-box {
-      background: var(--green); color: white; border-radius: 14px; padding: 14px 16px;
-      font-weight: bold; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
-    }
-    .recommend-sub { font-size: 0.75rem; opacity: 0.9; margin-bottom: 4px; }
-
-    .time-card {
-      background: white; border-radius: 14px; padding: 18px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; position: relative;
-    }
-    .time-card-badge {
-      position: absolute; top: 16px; right: 16px; background: var(--urgent); color: white;
-      font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 12px;
-      box-shadow: 0 2px 6px rgba(239,68,68,0.3);
-    }
-    .route-type { font-size: 0.75rem; background: #fee2e2; color: #991b1b; padding: 3px 8px; border-radius: 6px; font-weight: bold; }
-    .target-name { font-size: 0.9rem; color: var(--text-sub); margin-left: 8px; font-weight: 600; }
-    .route-title { font-size: 1.05rem; font-weight: bold; margin: 12px 0 16px; color: var(--text); }
-    
-    .next-time-container { display: flex; justify-content: space-between; align-items: flex-end; border-top: 1px solid #e2e8f0; padding-top: 12px; }
-    .time-label { font-size: 0.8rem; color: var(--text-sub); margin-bottom: 4px; }
-    .time-val { font-size: 2.2rem; font-weight: 800; color: var(--kantetsu-dark); line-height: 1; letter-spacing: -1px; }
-    .eta-val { font-weight: 800; font-size: 1.1rem; text-align: right; }
-    .eta-val.safe { color: var(--green); }
-    .eta-val.warning { color: #f59e0b; }
-    .eta-val.danger { color: var(--urgent); animation: pulse 1.5s infinite; }
-    .eta-next { font-size: 0.8rem; color: var(--text-sub); margin-top: 4px; text-align: right; }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.6; }
-      100% { opacity: 1; }
+      justify-content: center;
+      transition: opacity 0.15s ease;
     }
 
-    .view-section { display: none; }
-    .view-section.active { display: flex; flex-direction: column; gap: 16px; animation: fadeIn 0.3s ease; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    /* デフォルト：完全消灯（0%発光・カメラストリームは裏でフル解像度待機） */
+    #camera-stage.guide-off {
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    #camera-stage.guide-off video {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* オプション：構図確認用の極小・超低輝度枠（72px×72px） */
+    #camera-stage.guide-on {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      border: 1px solid #1a0505;
+      overflow: hidden;
+      background-color: #000000;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    #camera-stage.guide-on video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* 極暗レッドUI（暗所順応・光漏れゼロ設計） */
+    .stealth-pill {
+      background-color: #050000;
+      border: 1px solid #220404;
+      color: #5c1010;
+      transition: all 0.12s ease;
+    }
+    .stealth-pill:active {
+      background-color: #140202;
+      color: #8f1d1d;
+    }
+    .stealth-pill.active {
+      background-color: #160303;
+      border-color: #450a0a;
+      color: #991b1b;
+    }
+
+    /* シャッター時の超微弱ドットパルス（周りの人に気づかれない極暗フィードバック） */
+    @keyframes stealthDotPulse {
+      0% { opacity: 0.15; transform: scale(1); }
+      35% { opacity: 0.95; transform: scale(1.6); background-color: #7f1d1d; }
+      100% { opacity: 0.15; transform: scale(1); }
+    }
+    .dot-pulse {
+      animation: stealthDotPulse 0.28s ease-out;
+    }
+
+    /* 確認画面のサムネイル（長押し保存許可） */
+    .review-thumb {
+      -webkit-touch-callout: default;
+      user-select: auto;
+    }
   </style>
 </head>
 <body>
 
-  <div class="top-header">
-    <div>
-      <div class="header-title-group">
-        <span class="badge">関東鉄道</span>
-        <strong style="font-size:1.1rem;">バス通勤ナビ</strong>
+  <!-- 1. メイン撮影画面：100%純黒（#000000）・連続タップ撮影 -->
+  <div id="shoot-screen" class="w-full h-full bg-black flex flex-col justify-between safe-top safe-bottom px-3">
+
+    <!-- 上端：極暗トグルバー（誤シャッター除外領域） -->
+    <header class="ui-control z-20 w-full max-w-md mx-auto flex items-center justify-between gap-1.5 pt-1">
+      <!-- 極小枠ON/OFF（初期構図合わせ用・デフォルトOFF） -->
+      <button
+        type="button"
+        id="guide-toggle-btn"
+        class="stealth-pill min-h-[34px] px-2.5 rounded-lg text-[11px] font-medium tracking-tight"
+      >
+        極小枠: OFF
+      </button>
+
+      <!-- 撮影モード表示（固定） -->
+      <span class="px-2 py-1 text-[10px] font-mono text-[#3a0000] tracking-wider">
+        ● 黒画面: 撮影中
+      </span>
+
+      <!-- 確認・一括保存画面への切替ボタン -->
+      <button
+        type="button"
+        id="open-review-btn"
+        class="stealth-pill min-h-[34px] px-2.5 rounded-lg text-[11px] font-bold tracking-tight"
+      >
+        確認・保存 (<span id="header-shot-count">0</span>枚)
+      </button>
+    </header>
+
+    <!-- 中央：完全黒の連続撮影エリア（オプションの極小枠のみ配置） -->
+    <main class="flex-1 flex flex-col items-center justify-center relative">
+      <div id="camera-stage" class="guide-off">
+        <video id="video" playsinline muted autoplay></video>
       </div>
-      <div class="header-sub">文化センター入口 / 緑岡高校入口 / 水戸駅</div>
-    </div>
-    <div class="time-display">
-      <div id="current-time">--:--</div>
-      <div class="date-display">
-        <span id="current-date">----/--/--</span>
-        <span class="dia-badge" id="dia-badge">ダイヤ判定中</span>
+
+      <!-- カメラ起動エラー時のみ極暗レッドで表示 -->
+      <div
+        id="error-box"
+        class="hidden max-w-xs w-full bg-[#080000] border border-[#3a0000] rounded-2xl p-4 text-center z-30"
+      >
+        <p class="text-xs font-bold text-[#7f1d1d] mb-1.5" id="error-title">カメラを起動できませんでした</p>
+        <p class="text-[11px] text-[#4a1010] leading-relaxed mb-3" id="error-desc">
+          Safariのカメラ許可とHTTPS接続を確認してください。
+        </p>
+        <button
+          type="button"
+          id="retry-camera-btn"
+          class="ui-control px-4 py-2 rounded-xl bg-[#140000] border border-[#3a0000] text-[#7f1d1d] text-xs font-bold"
+        >
+          再試行
+        </button>
       </div>
-    </div>
+    </main>
+
+    <!-- 下端：極暗カウンター＆フィードバックドットのみ（ボタン光漏れなし） -->
+    <footer class="w-full max-w-md mx-auto flex items-center justify-between px-2 pb-1 pointer-events-none">
+      <div class="flex items-center gap-2">
+        <span
+          id="pulse-dot"
+          class="w-2 h-2 rounded-full bg-[#3a0000] opacity-20 inline-block"
+        ></span>
+        <span id="status-mini" class="font-mono text-[10px] text-[#2a0000] tracking-widest">
+          READY
+        </span>
+      </div>
+
+      <div class="font-mono text-[11px] text-[#3a0000] tracking-widest">
+        SHOTS: <span id="footer-shot-count">0</span>
+      </div>
+    </footer>
   </div>
 
-  <div class="container">
+  <!-- フル解像度キャプチャ用非表示Canvas -->
+  <canvas id="capture-canvas" class="hidden"></canvas>
 
-    <div class="dark-card">
-      <div class="card-head">
-        <div class="card-head-title">📈 リアルタイム遅延・バス位置確認</div>
-      </div>
-      <div class="card-desc">関東鉄道公式ナビに直結。現在走っているバスのリアルタイム位置と遅延分数を直接チェックできます。</div>
-      <div class="btn-group">
-        <a class="btn-action" href="https://navi.kanto-tetsudo.com/search_hist" target="_blank">バスの遅延を確認 ↗</a>
-        <a class="btn-action secondary" href="https://navi.kanto-tetsudo.com/" target="_blank">関鉄トップ ↗</a>
-      </div>
-    </div>
+  <!-- 2. 撮影後の確認・削除・一括保存画面（暗い場所を離れてから開く） -->
+  <section
+    id="review-screen"
+    class="fixed inset-0 bg-[#050505] text-slate-200 z-50 hidden flex-col justify-between safe-top safe-bottom"
+  >
+    <!-- ヘッダー：撮影モードへ戻る＆全削除 -->
+    <div class="px-4 py-3 border-b border-slate-900 flex items-center justify-between gap-2 bg-black">
+      <button
+        type="button"
+        id="back-to-shoot-btn"
+        class="min-h-[40px] px-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200 text-xs font-bold active:bg-slate-800"
+      >
+        ← 黒画面（撮影）に戻る
+      </button>
 
-    <div class="tab-bar">
-      <button class="tab-btn" id="btn-auto" onclick="switchTab('auto')">✨ 自動切替</button>
-      <button class="tab-btn" id="btn-am" onclick="switchTab('am')">☀️ 行き(朝)</button>
-      <button class="tab-btn" id="btn-pm" onclick="switchTab('pm')">🌙 帰路(夕)</button>
-    </div>
-
-    <!-- 午前ビュー -->
-    <div id="view-am" class="view-section">
-      <div class="main-route-card">
-        <div class="route-sub-label">朝ルート（行き）</div>
-        <div class="route-main-name">☀️ 文化センター入口 ➔ 緑岡高校入口</div>
-      </div>
-      <div class="time-card">
-        <div>
-          <span class="route-type">通勤ルート</span><span class="target-name">緑岡高校入口 行き</span>
-        </div>
-        <div class="route-title">文化センター入口 ➔ 緑岡高校入口</div>
-        <div class="next-time-container">
-          <div>
-            <div class="time-label">次回発車時刻</div>
-            <div class="time-val" id="am-next-time">--:--</div>
-          </div>
-          <div>
-            <div class="eta-val" id="am-eta">計算中...</div>
-            <div class="eta-next" id="am-sub-next">次便: --:--</div>
-          </div>
-        </div>
+      <div class="text-right">
+        <p class="text-xs font-bold text-slate-200">撮影データ (<span id="review-total-count">0</span>枚)</p>
+        <p class="text-[10px] text-slate-500">不要な写真は個別に削除できます</p>
       </div>
     </div>
 
-    <!-- 午後ビュー -->
-    <div id="view-pm" class="view-section">
-      <div class="main-route-card">
-        <div class="route-sub-label">夕方ルート（帰路）</div>
-        <div class="route-main-name">🌙 緑岡高校入口 ➔ 水戸駅北口 / 南口</div>
+    <!-- サムネイルグリッド一覧 -->
+    <div id="gallery-scroll" class="flex-1 overflow-y-auto p-4">
+      <div id="empty-gallery-msg" class="h-full flex flex-col items-center justify-center text-center text-slate-500 py-12">
+        <p class="text-sm font-bold mb-1">まだ撮影された写真はありません</p>
+        <p class="text-xs text-slate-600">黒画面に戻り、画面のどこかをタップすると連続撮影できます</p>
       </div>
 
-      <div class="recommend-box" id="recommend-box">
-        <div class="recommend-sub">夕方帰路：早く来る便の自動比較</div>
-        <div id="recommend-text">計算中...</div>
-      </div>
-
-      <div class="time-card">
-        <span class="time-card-badge" id="badge-north" style="display:none;">⏱️ 先発</span>
-        <div>
-          <span class="route-type">北口ルート</span><span class="target-name">水戸駅北口 行き</span>
-        </div>
-        <div class="route-title">緑岡高校入口 ➔ 水戸駅北口</div>
-        <div class="next-time-container">
-          <div>
-            <div class="time-label">次回発車時刻</div>
-            <div class="time-val" id="pm-north-next-time">--:--</div>
-          </div>
-          <div>
-            <div class="eta-val" id="pm-north-eta">計算中...</div>
-            <div class="eta-next" id="pm-north-sub">次便: --:--</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="time-card">
-        <span class="time-card-badge" id="badge-south" style="display:none; background:#0284c7;">⏱️ 先発</span>
-        <div>
-          <span class="route-type" style="background:#e0f2fe; color:#0369a1;">南口ルート</span><span class="target-name">水戸駅南口 行き</span>
-        </div>
-        <div class="route-title">緑岡高校入口 ➔ 水戸駅南口</div>
-        <div class="next-time-container">
-          <div>
-            <div class="time-label">次回発車時刻</div>
-            <div class="time-val" id="pm-south-next-time">--:--</div>
-          </div>
-          <div>
-            <div class="eta-val" id="pm-south-eta">計算中...</div>
-            <div class="eta-next" id="pm-south-sub">次便: --:--</div>
-          </div>
-        </div>
-      </div>
+      <div id="photo-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
     </div>
 
-  </div>
+    <!-- フッター：一括保存（iPhone標準共有シート対応）＆全消去 -->
+    <div class="px-4 pt-3 pb-1 border-t border-slate-900 bg-black flex flex-col gap-2">
+      <div class="w-full max-w-md mx-auto grid grid-cols-3 gap-2">
+        <button
+          type="button"
+          id="clear-all-btn"
+          class="col-span-1 min-h-[46px] rounded-xl bg-rose-950/60 border border-rose-900/50 text-rose-300 text-xs font-bold disabled:opacity-30"
+          disabled
+        >
+          すべて削除
+        </button>
+        <button
+          type="button"
+          id="batch-save-btn"
+          class="col-span-2 min-h-[46px] rounded-xl bg-sky-600 active:bg-sky-500 text-white text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 disabled:opacity-30"
+          disabled
+        >
+          <span>📥 まとめて写真に保存</span>
+        </button>
+      </div>
+      <p id="save-hint-text" class="text-[10px] text-slate-500 text-center">
+        ※iPhoneは「まとめて写真に保存」→「N枚の画像を保存」でカメラロールへ一括保存できます
+      </p>
+    </div>
+  </section>
 
   <script>
-    const timetables = {
-      weekday: {
-        am: ["07:15", "07:35", "07:50", "08:10", "08:30"],
-        pmNorth: ["16:15", "16:45", "17:15", "17:45", "18:15", "19:00"],
-        pmSouth: ["16:30", "17:00", "17:30", "18:00", "18:30"]
-      },
-      weekend: {
-        am: ["07:30", "08:00", "08:30", "09:00"],
-        pmNorth: ["16:30", "17:30", "18:30", "19:30"],
-        pmSouth: ["16:45", "17:45", "18:45"]
-      }
-    };
+    const videoEl = document.getElementById('video');
+    const canvasEl = document.getElementById('capture-canvas');
+    const stageEl = document.getElementById('camera-stage');
+    const shootScreenEl = document.getElementById('shoot-screen');
+    const reviewScreenEl = document.getElementById('review-screen');
+    const pulseDotEl = document.getElementById('pulse-dot');
+    const statusMiniEl = document.getElementById('status-mini');
+    const errorBoxEl = document.getElementById('error-box');
+    const errorTitleEl = document.getElementById('error-title');
+    const errorDescEl = document.getElementById('error-desc');
 
-    let currentTabMode = 'auto';
+    const guideToggleBtnEl = document.getElementById('guide-toggle-btn');
+    const headerShotCountEl = document.getElementById('header-shot-count');
+    const footerShotCountEl = document.getElementById('footer-shot-count');
+    const reviewTotalCountEl = document.getElementById('review-total-count');
+    const photoGridEl = document.getElementById('photo-grid');
+    const emptyGalleryMsgEl = document.getElementById('empty-gallery-msg');
+    const batchSaveBtnEl = document.getElementById('batch-save-btn');
+    const clearAllBtnEl = document.getElementById('clear-all-btn');
 
-    function updateApp() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('current-time').textContent = `${hours}:${minutes}`;
+    let currentStream = null;
+    let showGuide = false; // デフォルトは100%完全黒（OFF）
+    let isCapturing = false;
+    // メモリ保持配列: { id, blob, url, filename, width, height, timestamp }
+    let capturedPhotos = [];
 
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const date = String(now.getDate()).padStart(2, '0');
-      const days = ['日', '月', '火', '水', '木', '金', '土'];
-      document.getElementById('current-date').textContent = `${month}/${date}(${days[now.getDay()]})`;
+    /**
+     * 背面カメラをフル解像度で起動する
+     */
+    async function startCamera() {
+      errorBoxEl.classList.add('hidden');
+      statusMiniEl.textContent = 'BOOT';
 
-      const isWeekend = now.getDay() === 0 || now.getDay() === 6;
-      const currentSchedule = isWeekend ? timetables.weekend : timetables.weekday;
-      
-      const badge = document.getElementById('dia-badge');
-      badge.textContent = isWeekend ? "土日祝ダイヤ" : "平日ダイヤ";
-      badge.style.background = isWeekend ? "#fca5a5" : "#ffeb3b";
-      badge.style.color = isWeekend ? "#7f1d1d" : "#000";
-
-      const amInfo = getNextBusInfo(currentSchedule.am, now);
-      const pmNorthInfo = getNextBusInfo(currentSchedule.pmNorth, now);
-      const pmSouthInfo = getNextBusInfo(currentSchedule.pmSouth, now);
-
-      updateDisplay('am', amInfo);
-      updateDisplay('pm-north', pmNorthInfo);
-      updateDisplay('pm-south', pmSouthInfo);
-
-      updateRecommend(pmNorthInfo, pmSouthInfo);
-
-      if (currentTabMode === 'auto') {
-        applyTabDisplay('auto', now.getHours());
-      }
-    }
-
-    function getNextBusInfo(times, now) {
-      const currentMinutes = now.getHours() * 60 + now.getMinutes();
-      for (let i = 0; i < times.length; i++) {
-        const [h, m] = times[i].split(':').map(Number);
-        const busMinutes = h * 60 + m;
-        if (busMinutes >= currentMinutes) {
-          return {
-            next: times[i],
-            diffMinutes: busMinutes - currentMinutes,
-            afterNext: i + 1 < times.length ? times[i + 1] : null
-          };
-        }
-      }
-      return { next: null, diffMinutes: null, afterNext: null };
-    }
-
-    function updateDisplay(prefix, info) {
-      const timeEl = document.getElementById(`${prefix}-next-time`);
-      const etaEl = document.getElementById(`${prefix}-eta`);
-      const subEl = document.getElementById(`${prefix}-sub`);
-
-      if (!timeEl || !etaEl || !subEl) return;
-
-      if (info.diffMinutes === null) {
-        timeEl.textContent = "終了";
-        etaEl.textContent = "本日の運行終了";
-        etaEl.className = "eta-val";
-        subEl.textContent = "次便: なし";
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showCameraError(
+          'カメラAPIが利用できません',
+          'HTTPS（https://〜）のURLで開いているか確認してください。'
+        );
         return;
       }
 
-      timeEl.textContent = info.next;
-      subEl.textContent = `次便: ${info.afterNext || "なし"}`;
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
 
-      if (info.diffMinutes === 0) {
-        etaEl.textContent = "🚌 まもなく発車!";
-        etaEl.className = "eta-val danger";
-      } else if (info.diffMinutes <= 5) {
-        etaEl.textContent = `あと ${info.diffMinutes}分`;
-        etaEl.className = "eta-val danger";
-      } else if (info.diffMinutes <= 15) {
-        etaEl.textContent = `あと ${info.diffMinutes}分`;
-        etaEl.className = "eta-val warning";
-      } else {
-        etaEl.textContent = `あと ${info.diffMinutes}分`;
-        etaEl.className = "eta-val safe";
+      try {
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 4032 },
+            height: { ideal: 3024 }
+          }
+        };
+
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        videoEl.srcObject = currentStream;
+
+        videoEl.onloadedmetadata = () => {
+          videoEl.play().catch(() => {});
+          statusMiniEl.textContent = '0% GLOW';
+        };
+      } catch (err) {
+        console.error('Camera start failed:', err);
+        if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+          showCameraError(
+            'カメラのアクセスが許可されていません',
+            'Safariの設定からカメラを許可して「再試行」を押してください。'
+          );
+        } else {
+          showCameraError(
+            '背面カメラの起動に失敗しました',
+            `他のアプリがカメラを使用中か非対応です。（${err.name || 'Error'}）`
+          );
+        }
       }
     }
 
-    function updateRecommend(north, south) {
-      const badgeNorth = document.getElementById('badge-north');
-      const badgeSouth = document.getElementById('badge-south');
-      const recommendText = document.getElementById('recommend-text');
+    function showCameraError(title, desc) {
+      errorTitleEl.textContent = title;
+      errorDescEl.textContent = desc;
+      errorBoxEl.classList.remove('hidden');
+      statusMiniEl.textContent = 'ERR';
+    }
 
-      if (north.diffMinutes !== null && (south.diffMinutes === null || north.diffMinutes <= south.diffMinutes)) {
-        badgeNorth.style.display = 'block'; badgeSouth.style.display = 'none';
-        recommendText.textContent = `⚡️ 「北口行き」が先発（あと ${north.diffMinutes}分）`;
-      } else if (south.diffMinutes !== null) {
-        badgeNorth.style.display = 'none'; badgeSouth.style.display = 'block';
-        recommendText.textContent = `⚡️ 「南口行き」が先発（あと ${south.diffMinutes}分）`;
-      } else {
-        badgeNorth.style.display = 'none'; badgeSouth.style.display = 'none';
-        recommendText.textContent = `🌙 本日の運行はすべて終了しました`;
+    /**
+     * 無中断・連続撮影（撮影後に画面を一切光らせずメモリに蓄積）
+     */
+    function captureContinuous() {
+      if (isCapturing || !currentStream || videoEl.readyState < 2) {
+        return;
+      }
+
+      const width = videoEl.videoWidth;
+      const height = videoEl.videoHeight;
+      if (!width || !height) return;
+
+      isCapturing = true;
+
+      // 超微弱ドットパルス＆触覚バイブレーションのみ（周囲へ光漏れゼロ）
+      pulseDotEl.classList.remove('dot-pulse');
+      void pulseDotEl.offsetWidth;
+      pulseDotEl.classList.add('dot-pulse');
+      if (navigator.vibrate) {
+        navigator.vibrate(30);
+      }
+
+      canvasEl.width = width;
+      canvasEl.height = height;
+      const ctx = canvasEl.getContext('2d');
+      ctx.drawImage(videoEl, 0, 0, width, height);
+
+      canvasEl.toBlob((blob) => {
+        isCapturing = false;
+        if (!blob) return;
+
+        const now = new Date();
+        const pad = (n, len = 2) => String(n).padStart(len, '0');
+        const filename = `night_${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}_${pad(now.getMilliseconds(), 3)}.jpg`;
+        const objectUrl = URL.createObjectURL(blob);
+
+        capturedPhotos.push({
+          id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+          blob,
+          url: objectUrl,
+          filename,
+          width,
+          height,
+          timeStr: `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+        });
+
+        updateCounters();
+      }, 'image/jpeg', 0.95);
+    }
+
+    function updateCounters() {
+      const count = capturedPhotos.length;
+      headerShotCountEl.textContent = count;
+      footerShotCountEl.textContent = count;
+      reviewTotalCountEl.textContent = count;
+      batchSaveBtnEl.disabled = count === 0;
+      clearAllBtnEl.disabled = count === 0;
+    }
+
+    /**
+     * 確認・一括保存グリッドの描画
+     */
+    function renderGallery() {
+      photoGridEl.innerHTML = '';
+
+      if (capturedPhotos.length === 0) {
+        emptyGalleryMsgEl.classList.remove('hidden');
+        return;
+      }
+      emptyGalleryMsgEl.classList.add('hidden');
+
+      capturedPhotos.forEach((photo, index) => {
+        const card = document.createElement('div');
+        card.className = 'bg-slate-900 border border-slate-800 rounded-xl overflow-hidden flex flex-col';
+
+        card.innerHTML = `
+          <div class="relative aspect-[3/4] bg-black overflow-hidden">
+            <img
+              src="${photo.url}"
+              alt="撮影写真 ${index + 1}"
+              class="review-thumb w-full h-full object-cover"
+            />
+            <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[10px] font-mono text-slate-300">
+              #${index + 1} · ${photo.timeStr}
+            </span>
+          </div>
+          <div class="p-1.5 grid grid-cols-2 gap-1.5 bg-slate-950">
+            <button
+              type="button"
+              data-action="download"
+              data-id="${photo.id}"
+              class="min-h-[34px] rounded-lg bg-slate-800 active:bg-slate-700 text-slate-200 text-[11px] font-bold"
+            >
+              ⬇️ 保存
+            </button>
+            <button
+              type="button"
+              data-action="delete"
+              data-id="${photo.id}"
+              class="min-h-[34px] rounded-lg bg-rose-950/70 active:bg-rose-900 text-rose-300 text-[11px] font-bold"
+            >
+              🗑 削除
+            </button>
+          </div>
+        `;
+
+        photoGridEl.appendChild(card);
+      });
+    }
+
+    /**
+     * 個別削除（メモリ解放付き）
+     */
+    function deletePhotoById(id) {
+      const idx = capturedPhotos.findIndex(p => p.id === id);
+      if (idx === -1) return;
+      URL.revokeObjectURL(capturedPhotos[idx].url);
+      capturedPhotos.splice(idx, 1);
+      updateCounters();
+      renderGallery();
+    }
+
+    /**
+     * 個別ダウンロード
+     */
+    function downloadSinglePhoto(photo) {
+      const a = document.createElement('a');
+      a.href = photo.url;
+      a.download = photo.filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    /**
+     * 一括保存（iPhone Safari Web Share API優先 / 非対応時は連続ダウンロード）
+     */
+    async function saveAllPhotos() {
+      if (capturedPhotos.length === 0) return;
+
+      const files = capturedPhotos.map(
+        p => new File([p.blob], p.filename, { type: 'image/jpeg' })
+      );
+
+      // iOS Safari等で複数ファイル共有（「N枚の画像を保存」）が使える場合
+      if (navigator.canShare && navigator.canShare({ files })) {
+        try {
+          await navigator.share({
+            files,
+            title: `夜景写真 (${files.length}枚)`
+          });
+          return;
+        } catch (err) {
+          // ユーザーキャンセル時は何もしない
+          if (err && err.name === 'AbortError') return;
+        }
+      }
+
+      // フォールバック：順番に個別ダウンロードを実行
+      for (let i = 0; i < capturedPhotos.length; i++) {
+        downloadSinglePhoto(capturedPhotos[i]);
+        await new Promise(r => setTimeout(r, 250));
       }
     }
 
-    function switchTab(type) {
-      currentTabMode = type;
-      applyTabDisplay(type, new Date().getHours());
-    }
+    // ==========================================
+    // イベントリスナー登録
+    // ==========================================
 
-    function applyTabDisplay(type, currentHour) {
-      document.getElementById('btn-auto').classList.remove('active');
-      document.getElementById('btn-am').classList.remove('active');
-      document.getElementById('btn-pm').classList.remove('active');
-      document.getElementById('view-am').classList.remove('active');
-      document.getElementById('view-pm').classList.remove('active');
-
-      if (type === 'am' || (type === 'auto' && currentHour < 13)) {
-        document.getElementById(type === 'auto' ? 'btn-auto' : 'btn-am').classList.add('active');
-        document.getElementById('view-am').classList.add('active');
+    // 極小枠 ON/OFF 切替（構図合わせ用・デフォルトOFF）
+    guideToggleBtnEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showGuide = !showGuide;
+      if (showGuide) {
+        stageEl.classList.remove('guide-off');
+        stageEl.classList.add('guide-on');
+        guideToggleBtnEl.classList.add('active');
+        guideToggleBtnEl.textContent = '極小枠: ON';
       } else {
-        document.getElementById(type === 'auto' ? 'btn-auto' : 'btn-pm').classList.add('active');
-        document.getElementById('view-pm').classList.add('active');
+        stageEl.classList.remove('guide-on');
+        stageEl.classList.add('guide-off');
+        guideToggleBtnEl.classList.remove('active');
+        guideToggleBtnEl.textContent = '極小枠: OFF';
       }
-    }
+    });
 
-    setInterval(updateApp, 1000);
-    updateApp();
+    // 黒画面のどこをタップしても即座に連続撮影
+    shootScreenEl.addEventListener('click', (e) => {
+      if (e.target.closest('.ui-control') || e.target.closest('#error-box')) {
+        return;
+      }
+      captureContinuous();
+    });
+
+    // 「確認・保存」画面を開く
+    document.getElementById('open-review-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderGallery();
+      reviewScreenEl.classList.remove('hidden');
+      reviewScreenEl.classList.add('flex');
+    });
+
+    // 「黒画面（撮影）に戻る」
+    document.getElementById('back-to-shoot-btn').addEventListener('click', () => {
+      reviewScreenEl.classList.add('hidden');
+      reviewScreenEl.classList.remove('flex');
+    });
+
+    // サムネイル内の個別「保存」「削除」
+    photoGridEl.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const action = btn.getAttribute('data-action');
+      const id = btn.getAttribute('data-id');
+      const targetPhoto = capturedPhotos.find(p => p.id === id);
+      if (!targetPhoto) return;
+
+      if (action === 'delete') {
+        deletePhotoById(id);
+      } else if (action === 'download') {
+        downloadSinglePhoto(targetPhoto);
+      }
+    });
+
+    // 一括保存ボタン
+    batchSaveBtnEl.addEventListener('click', saveAllPhotos);
+
+    // すべて削除ボタン（confirm不使用・2段階タップ確認）
+    let confirmClearTimer = null;
+    clearAllBtnEl.addEventListener('click', () => {
+      if (capturedPhotos.length === 0) return;
+      if (clearAllBtnEl.dataset.armed !== 'true') {
+        clearAllBtnEl.dataset.armed = 'true';
+        clearAllBtnEl.textContent = '本当に全削除？';
+        clearAllBtnEl.classList.add('bg-rose-700', 'text-white');
+        confirmClearTimer = setTimeout(() => {
+          clearAllBtnEl.dataset.armed = 'false';
+          clearAllBtnEl.textContent = 'すべて削除';
+          clearAllBtnEl.classList.remove('bg-rose-700', 'text-white');
+        }, 3000);
+        return;
+      }
+
+      clearTimeout(confirmClearTimer);
+      clearAllBtnEl.dataset.armed = 'false';
+      clearAllBtnEl.textContent = 'すべて削除';
+      clearAllBtnEl.classList.remove('bg-rose-700', 'text-white');
+
+      capturedPhotos.forEach(p => URL.revokeObjectURL(p.url));
+      capturedPhotos = [];
+      updateCounters();
+      renderGallery();
+    });
+
+    // カメラ再試行ボタン
+    document.getElementById('retry-camera-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      startCamera();
+    });
+
+    // アプリ復帰時にカメラが停止していたら自動再起動
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        if (!currentStream || currentStream.getTracks().every(t => t.readyState === 'ended')) {
+          startCamera();
+        }
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateCounters();
+      startCamera();
+    });
   </script>
 </body>
 </html>
